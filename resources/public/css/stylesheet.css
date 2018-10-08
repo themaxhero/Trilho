@@ -1,0 +1,413 @@
+/*
+    Trilho's CSS
+*/
+
+@-moz-document url-prefix() {
+    html,body{overflow: hidden !important;}
+}
+
+html {overflow: -moz-scrollbars-none;}  
+
+html, body, #app {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.progress-bar{
+    border-radius: 2px;
+    width: 100%;
+    height: 4px;
+    background-color: grey;
+}
+
+.main-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-image: url("http://getwallpapers.com/wallpaper/full/d/f/f/171443.jpg");
+}
+
+.main-container .header input{
+    border-radius: 10px;
+    padding: 8px;
+    width: 100px;
+}
+
+.main-container .header h2{
+    margin: 4px 0;
+}
+
+.main-container .header{
+    height: 9%;
+    width: 100%;
+    color: #FFFFFF;
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.main-container .header .title{
+    display: flex;
+    flex-direction: row;
+}
+
+.side-button{
+    margin-left: 8px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.save-and-load{
+    display: flex;
+    flex-direction: row;
+    padding-top: 8px;
+    padding-right: 8px;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+  }
+
+.edit-icon {
+    padding-top: 10px;
+    padding-left: 8px;
+    cursor: pointer;
+}
+
+/* ===============================================================================
+= Blocker 
+================================================================================*/
+.editor{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.blocker{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0.8;
+    z-index: 998;
+}
+
+.editing-card{
+    position: relative;
+    top: 8%;
+    left: 15%;
+    width: 70%;
+    height: 80%;
+    padding: 16px;
+    border-radius: 10px;
+    color: #17394d;
+    background-color: #dfe3e6;
+    z-index: 999;
+}
+
+.card-title{
+    width: 100%;
+    height: 3%;
+    margin-top: 5px;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.editing-container{
+    width: 100%;
+    height: 97%;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+}
+
+.right-side{
+    display: flex;
+    flex-direction: column;
+    width: 17%;
+}
+
+.left-side{
+    width: 83%;
+}
+
+.actions{
+    height: 30%;
+}
+
+.add-to-card{
+    height: 30%;
+}
+
+.card-labels{
+    height: 10%;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 28px;
+}
+
+.card-description{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 60%;
+}
+
+.card-comments{
+    padding: 8px;
+    height: 30%;
+}
+
+.comment-box{
+    margin-top: 8px;
+}
+
+.comment{
+    display: block;
+}
+
+.comment-text{
+    margin-left: 2%;
+    width: 40%;
+    height: 96px;
+    color: black;
+    padding: 4px;
+    border-color: lightgrey;
+    border-style: solid;
+    border-radius: 10px;
+    background-color: white;
+    resize: none;
+    overflow-y: hidden;
+}
+
+.comment-text::-webkit-scrollbar {
+    display: none;
+}
+
+.comment-button{
+    width: 100px;
+    height: 26px;
+    margin-top: 2px;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: lightgrey;
+    background-color: green;
+    font-weight: bold;
+    outline: none;
+    color: white;
+}
+.comment-button::-moz-focus-inner {
+    border: 0;
+ }
+
+ .comment-box-bottom{
+    display: flex;
+    flex-direction: row-reverse;
+    z-index: auto;
+    position: relative;
+    width: 40.75%;
+    height: 32px;
+    bottom: 38px;
+    margin-left: 2%;
+    background-color: white;
+    background-color: transparent;
+    line-height: 32px;
+ }
+
+.comment-button::before{
+    content: "Comment"
+}
+/* ===============================================================================
+= Checklist
+================================================================================*/
+.checklist-container{
+
+}
+
+.checklist-title{
+    display: flex;
+    flex-direction: row;
+}
+
+.checklist-top-left{
+    display: flex;
+    flex-direction: column;
+    margin: 0px 4px;
+
+}
+
+.checklist-top-right{
+    font-weight: bold;
+    width: 20%;
+    margin: 6px;
+}
+/* ===============================================================================
+= Content 
+================================================================================*/
+
+.main-container .content {
+    height: 87%;
+    max-width: 100%;
+    display: flex;
+    /* overflow-x: scroll; */
+    padding: 8px 8px 0 8px;
+    margin-right: auto;
+    flex-wrap: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    flex-direction: row-reverse;
+}
+
+.content::-webkit-scrollbar-corner{
+    display: none;
+}
+
+.main-container .content .list {
+    margin-left: 8px;
+    min-width: 220px;
+    max-width: 220px;
+    min-height: 400px;
+    max-height: 600px;
+    padding: 8px;
+    height: 400px;
+    display: flex;
+    border-radius: 5px;
+    color: #17394d;
+    background-color: #dfe3e6;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.list::-webkit-scrollbar-corner{
+    display: none;
+}
+
+.list-title-editing{
+    display: flex;
+    flex-direction: row;
+    height: 32px;
+}
+
+.list-title-editing input{
+    width: 155px;
+}
+
+.list-title-editing .side-button{
+    margin-top: 4px;
+}
+
+.list::-webkit-scrollbar {
+    display: none;
+}
+
+.main-container .content .ghost-list{
+    display: flex;
+    flex-direction: row;
+    min-width: 220px;
+    min-height: 400px;
+    max-height: 600px;
+    height: 416px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #777;
+    justify-content: center;
+    align-content: center;
+    background-color: #dfe3e6;
+    opacity: 0.5;
+    margin-left: 8px;
+    margin-right: 8px;
+    font-size: 100px;
+    transition: 0.5s ease-in;
+}
+.main-container .content .ghost-list:hover { 
+    background-color: #555;
+    color: #999;
+    transition: 0.5s ease-out;
+}
+
+.main-container .content .ghost-list::before{
+    display: block;
+    top: 35%;
+    left: -20%;
+    position: relative;
+    width: 0;
+    height: 0;
+}
+    .main-container .content .list .list-title{
+    display: flex;
+    justify-content: space-between;
+}
+
+.main-container .content .list .list-settings{
+    cursor: pointer;
+
+}
+
+.main-container .content .list .ghost-card::before {
+    content: "+";
+    margin-right: 8px;
+}
+
+.card-button{
+    margin-left: 8px;
+}
+
+
+
+/**/
+.card{
+    margin: 8px 0;
+    display: flex;
+    padding: 8px;
+    min-height: 24px;
+    border-radius: 5px;
+    background-color: white;
+    flex-direction: row;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.5s ease-in;
+}
+
+.card:hover{
+    color: darkblue;
+    background-color: lightgrey;
+    transition: 0.5s ease-out;
+}
+
+
+.main-container .content .list .card{
+    color: #17394d;   
+}
+
+.main-container .content .list .ghost-card{
+    justify-content: flex-start;   
+}
+
+.main-container .footer a{
+    margin: 0 5px;
+    color: white;  
+}
+
+.main-container .footer {
+    height: 4%;
+    width: 100%;
+    display: flex;
+    padding-top: 16px;
+    color: white;
+    opacity: 0.65;
+    justify-content: center;
+    background-color: black;
+}
