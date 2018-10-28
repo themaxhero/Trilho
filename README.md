@@ -1,6 +1,6 @@
 # trilho
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
+Trilho is a [re-frame](https://github.com/Day8/re-frame) application designed to organize your day and get your kanban in json format.
 
 ## Development Mode
 
