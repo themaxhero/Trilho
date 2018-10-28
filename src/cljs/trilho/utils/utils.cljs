@@ -118,7 +118,7 @@
     lists (assoc (:lists db) list-id new-list)
     rem-tasks (tasks-inside db card-id)
     new-tasks (remove #(contains? rem-tasks %) (:tasks db))
-    cards (filterv #(not (= (nth (:cards db) (get-card-index db card-id)) %)) (:cards db))]
+    cards (filterv #(not (= % (nth (:cards db) (get-card-index db card-id)))) (:cards db))]
     (-> db
         (assoc :tasks new-tasks)
         (assoc :cards cards)
@@ -127,9 +127,9 @@
 (defn remove-task [db task-id card-id]
   (let
    [card (fetch-card db card-id)
-    new-card (update card :task-ids filterv #(not (= % task-id)) (:task-ids card))
+    new-card (assoc card :task-ids (filterv #(not (= % task-id)) (:task-ids card)))
     cards (assoc (:cards db) (get-card-index db card-id) new-card)
-    tasks (filterv #(not (= % (nth (:tasks db) (get-card-index db card-id)))) (:tasks db))]
+    tasks (filterv #(not (= % (nth (:tasks db) (get-task-index db task-id)))) (:tasks db))]
     (-> db
         (assoc :tasks tasks)
         (assoc :cards cards))))
@@ -138,11 +138,11 @@
   (let
    [card (fetch-card db card-id)
     card-tasklist (:task-ids card)
-    card-tasks (reduce-kv (fn [acc k v]
-                            (into [] (conj acc (fetch-task db v))))
+    card-tasks (reduce-kv (fn [acc _ v]
+                             (into [] (conj acc (fetch-task db v))))
                           [] card-tasklist)]
     (reduce-kv (fn [acc _ v]
-                 (if  (:checked v) (+ acc 1) acc))
+                 (if  (:checked (debug-log v)) (+ acc 1) acc))
                0 card-tasks)))
 
 (defn conditional-merge [map condition other]

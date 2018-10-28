@@ -1,6 +1,7 @@
 (ns trilho.card
   (:require
    [re-frame.core :as re-frame]
+   [clojure.string :as string]
    [trilho.subs :as subs]
    [trilho.events :as events]
    [trilho.task :as task]
@@ -52,7 +53,7 @@
    [db (re-frame/subscribe [::subs/db])
     done-tasks (utils/done-tasks @db card-id)
     all-tasks (count tasks)
-    ratio (if (<= all-tasks 0) 0 (/ done-tasks all-tasks))]
+    ratio (if (<= all-tasks 0) 0 (/ (* done-tasks 100) all-tasks))]
     [:div.progress-bar
      [:div.progress-bar
       {:style
@@ -72,7 +73,8 @@
          [:div.checklist-title
           [:div.checklist-top-left
            [:i {:class "fas fa-clipboard-list" :style {:margin "4px"}}]
-           (if (<= (count tasks) 0) "0%" (str (/ done-tasks (count tasks)) "%"))]
+           (if (<= (count tasks) 0) "0%"
+               (str (string/join (take 4 (str (/ (* done-tasks 100) (count tasks))))) "%"))]
           [:div.checklist-top-right
            (str "Checklist (" done-tasks "/" (count tasks) ")")
            (progress-bar card-id tasks)]]

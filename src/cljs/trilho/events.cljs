@@ -119,11 +119,9 @@
  ::toggle-task
  (fn [db [_ task-id]]
    (let
-    [tasks (:tasks db)
-     task (tasks task-id)
-     new-task (update-in task :checked (not (:checked task)))
-     new-tasks (assoc tasks task-id new-task)]
-    (assoc db  :tasks new-tasks))))
+    [task (utils/fetch-task db task-id)
+     new-task (assoc task :checked (not (:checked (debug-log task))))]
+    (utils/update-task db task-id new-task))))
 
 (re-frame/reg-event-db
  ::stop-editing-card

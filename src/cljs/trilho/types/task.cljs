@@ -3,7 +3,7 @@
    [re-frame.core :as re-frame]
    [trilho.subs :as subs]
    [trilho.events :as events]
-   [trilho.utils :as utils :refer[conditional-merge]]))
+   [trilho.utils :as utils :refer[conditional-merge debug-log]]))
 
 (defn edit-button [task-id editing card-id]
   [:div.edit-task
@@ -21,8 +21,9 @@
     :on-click #(re-frame/dispatch [::events/remove-task task-id card-id])}])
 
 (defn task-attr [task-id marked]
-  (-> {:type "checkbox" :on-click #(re-frame/dispatch [::events/toggle-task task-id])}
-      (conditional-merge marked {:checked ""})))
+  {:type "checkbox"
+   :checked (if marked {} "")
+   :on-change #(re-frame/dispatch [::events/toggle-task task-id])})
 
 (defn render [task-id card-id]
   (let
