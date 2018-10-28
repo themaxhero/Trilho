@@ -26,8 +26,8 @@
 
 (defn render [card-id list-id]
   (let
-   [cards (re-frame/subscribe [::subs/cards])
-    card (@cards card-id)
+   [db (re-frame/subscribe [::subs/db])
+    card (utils/fetch-card @db card-id)
     title (:title card)
     task-ids (:task-ids card)]
     [:div.card.noselect
@@ -49,21 +49,24 @@
 
 (defn progress-bar [card-id tasks]
   (let
-   [done-tasks (utils/get-done-tasks card-id)
+   [db (re-frame/subscribe [::subs/db])
+    done-tasks (utils/done-tasks @db card-id)
     all-tasks (count tasks)
     ratio (if (<= all-tasks 0) 0 (/ done-tasks all-tasks))]
     [:div.progress-bar
-     [:div.progress-bar {:style {:width (str ratio "%") :background-color "#0F0"}}]]))
+     [:div.progress-bar
+      {:style
+       {:width (str ratio "%") :background-color "#0F0"}}]]))
 
-(defn check-list [tasks]
-  (reduce-kv (fn [acc _ v] (conj acc (task/render v))) '() tasks))
+(defn check-list [tasks card-id]
+  (reduce-kv (fn [acc _ v] (conj acc (task/render v card-id))) '() tasks))
 
 (defn render-checklist [card-id]
   (let
-   [cards (re-frame/subscribe [::subs/cards])
-    card (nth @cards card-id)
-    tasks (:task-ids cards)
-    done-tasks (utils/get-done-tasks card-id)]
+   [db (re-frame/subscribe [::subs/db])
+    card (utils/fetch-card @db card-id)
+    tasks (:task-ids card)
+    done-tasks (utils/done-tasks @db card-id)]
     (if (< (count tasks) 0) ()
         [:div.checklist-container
          [:div.checklist-title
@@ -71,15 +74,15 @@
            [:i {:class "fas fa-clipboard-list" :style {:margin "4px"}}]
            (if (<= (count tasks) 0) "0%" (str (/ done-tasks (count tasks)) "%"))]
           [:div.checklist-top-right
-           (str "Checklist (" (utils/get-done-tasks card-id) "/" (count tasks) ")")
+           (str "Checklist (" done-tasks "/" (count tasks) ")")
            (progress-bar card-id tasks)]]
-         (check-list tasks)])))
+         (check-list tasks card-id)])))
 
 (defn render-editing-left [card-id]
   (let
-   [cards (re-frame/subscribe [::subs/cards])
-    card (nth @cards card-id)
-    tasks (:task-ids cards)]
+   [db (re-frame/subscribe [::subs/db])
+    card (utils/fetch-card @db card-id)
+    tasks (:task-ids card)]
     [:div.left-side
      (render-description card-id)
      (if (<= (count tasks) 0)
@@ -110,8 +113,8 @@
 
 (defn render-title [card-id]
   (let
-   [cards (re-frame/subscribe [::subs/cards])
-    card (@cards card-id)]
+   [db (re-frame/subscribe [::subs/db])
+    card (utils/fetch-card @db card-id)]
     [:div.card-title (:title card)]))
 
 (defn render-editing []

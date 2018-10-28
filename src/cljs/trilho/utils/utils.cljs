@@ -12,16 +12,28 @@
     list (nth lists (debug-log list-id))]
     list))
 
+(defn get-card-index [db card-id]
+  (let
+   [cards (:cards db)
+    card-index (reduce-kv (fn [acc k v] (if (= (:id v) card-id) k acc)) :none cards)]
+    card-index))
+
+(defn get-task-index [db task-id]
+  (let
+   [tasks (:tasks db)
+    task-index (reduce-kv (fn [acc k v] (if (= (:id v) task-id) k acc)) :none tasks)]
+    task-index))
+
 (defn fetch-card [db card-id]
   (let
    [cards (:cards db)
-    card (nth cards card-id)]
+    card (reduce-kv (fn [acc _ v] (if (= (:id v) card-id) v acc)) :none cards)]
     card))
 
 (defn fetch-task [db task-id]
   (let
    [tasks (:tasks db)
-    task (nth tasks task-id)]
+    task (reduce-kv (fn [acc _ v] (if (= (:id v) task-id) v acc)) :none tasks)]
     task))
 
 (defn update-list [db list-id new-list]
@@ -31,13 +43,15 @@
 
 (defn update-card [db card-id new-card]
   (let
-   [cards (:cards db)]
-   (assoc db :cards (assoc cards card-id new-card))))
+   [cards (:cards db)
+    card-index (get-card-index db card-id)]
+    (assoc db :cards (assoc cards card-index new-card))))
 
 (defn update-task [db task-id new-task]
   (let
-   [tasks (:tasks db)]
-   (assoc db :tasks (assoc tasks task-id new-task))))
+   [tasks (:tasks db)
+    task-index (get-task-index db task-id)]
+   (assoc db :tasks (assoc tasks task-index new-task))))
 
 (defn insert-list [db list]
   (update db :lists conj list))
@@ -45,7 +59,7 @@
 (defn insert-card [db list-id card]
   (let
    [list (fetch-list db list-id)
-    card-id (count (:cards db))
+    card-id (:id card)
     new-cards (conj (:cards db) card)
     new-list (update list :card-ids conj card-id)]
     (-> db
@@ -55,11 +69,11 @@
 (defn insert-task [db card-id task]
   (let
    [card (fetch-card db card-id)
-    task-id (count (:tasks db))
+    task-id (:id task)
     new-card (update card :task-ids conj task-id)]
     (-> db
         (update :tasks conj task)
-        (assoc :cards card-id new-card))))
+        (update-card card-id new-card))))
 
 (defn cards-inside [db list-id]
   (let
@@ -75,7 +89,9 @@
   (let
    [cards (:cards db)
     tasks (:tasks db)
-    rem-tasks (reduce-kv (fn [acc card-id _] (into [] (concat acc (tasks-inside db card-id)))) [] cards)
+    rem-tasks (reduce-kv
+               (fn [acc _ card]
+                 (into [] (concat acc (tasks-inside db (:id card))))) [] cards)
     new-tasks (remove #(contains? rem-tasks %) (:tasks db))]
     (assoc db :tasks new-tasks)))
 
@@ -102,7 +118,7 @@
     lists (assoc (:lists db) list-id new-list)
     rem-tasks (tasks-inside db card-id)
     new-tasks (remove #(contains? rem-tasks %) (:tasks db))
-    cards (filterv #(not (= (nth (:cards db) card-id) %)) (:cards db))]
+    cards (filterv #(not (= (nth (:cards db) (get-card-index db card-id)) %)) (:cards db))]
     (-> db
         (assoc :tasks new-tasks)
         (assoc :cards cards)
@@ -112,18 +128,22 @@
   (let
    [card (fetch-card db card-id)
     new-card (update card :task-ids filterv #(not (= % task-id)) (:task-ids card))
-    cards (assoc (:cards db) card-id new-card)
-    tasks (filterv #(not (= % ((:tasks db) task-id))) (:tasks db))]
+    cards (assoc (:cards db) (get-card-index db card-id) new-card)
+    tasks (filterv #(not (= % (nth (:tasks db) (get-card-index db card-id)))) (:tasks db))]
     (-> db
         (assoc :tasks tasks)
         (assoc :cards cards))))
 
-
-(defn get-done-tasks [card-id]
+(defn done-tasks [db card-id]
   (let
-   [cards (re-frame/subscribe [::subs/cards])
-    card (@cards card-id)
-    tasks (re-frame/subscribe [::subs/tasks])
+   [card (fetch-card db card-id)
     card-tasklist (:task-ids card)
-    card-tasks (reduce-kv (fn [acc k v] (conj acc (@tasks v))) [] card-tasklist)]
-    (reduce-kv (fn [acc k v] (if (:checked v) (+ acc 1) acc )) 0 card-tasks)))
+    card-tasks (reduce-kv (fn [acc k v]
+                            (into [] (conj acc (fetch-task db v))))
+                          [] card-tasklist)]
+    (reduce-kv (fn [acc _ v]
+                 (if  (:checked v) (+ acc 1) acc))
+               0 card-tasks)))
+
+(defn conditional-merge [map condition other]
+  (if condition (merge map other) map))

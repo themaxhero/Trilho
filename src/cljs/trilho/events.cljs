@@ -96,6 +96,26 @@
    (utils/remove-task db task-id card-id)))
 
 (re-frame/reg-event-db
+ ::update-task-buffer
+ (fn [db [_ task-id new-value]]
+   (let
+    [task (utils/fetch-task db task-id)
+     new-task (assoc task :name-buffer new-value)]
+     (utils/update-task db task-id new-task))))
+
+(re-frame/reg-event-db
+ ::edit-task
+ (fn [db [_ task-id]]
+   (let [task (utils/fetch-task db task-id)]
+     (utils/update-task db task-id (-> task (assoc :editing true))))))
+
+(re-frame/reg-event-db
+ ::change-task-name
+ (fn [db [_ task-id]]
+   (let [task (utils/fetch-task db task-id)]
+     (utils/update-task db task-id (-> task (assoc  :name (:name-buffer task)) (assoc :editing false))))))
+
+(re-frame/reg-event-db
  ::toggle-task
  (fn [db [_ task-id]]
    (let

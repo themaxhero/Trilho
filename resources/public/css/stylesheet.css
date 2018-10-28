@@ -387,6 +387,28 @@ html, body, #app {
     transition: 0.5s ease-out;
 }
 
+.task{
+    display: flex;
+    flex-direction: row;
+}
+
+.task-check{
+    margin-top: 5px;
+    margin-right: 12px;
+    cursor: pointer;
+}
+
+.edit-task, .delete-task{
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.task-name{
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    top: 4px;
+}
 
 .main-container .content .list .card{
     color: #17394d;   
