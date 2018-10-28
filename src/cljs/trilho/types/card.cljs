@@ -117,7 +117,16 @@
   (let
    [db (re-frame/subscribe [::subs/db])
     card (utils/fetch-card @db card-id)]
-    [:div.card-title (:title card)]))
+    [:div.card-title.noselect
+     (if-not (:name-editing card)
+       [:div {:on-click #(re-frame/dispatch [::events/edit-card-name card-id])} (:title card)]
+       [:div
+        [:input
+         {:value (:name-buffer card)
+          :on-change #(re-frame/dispatch [::events/update-card-buffer card-id (-> % .-target .-value)])}]
+        [:div {:class "fas fa-check"
+               :style {:margin-left "8px" :margin-top "5px" :cursor "pointer"}
+               :on-click #(re-frame/dispatch [::events/change-card-name card-id])}]])]))
 
 (defn render-editing []
   (let

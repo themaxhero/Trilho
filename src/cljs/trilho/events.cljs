@@ -86,6 +86,31 @@
    (utils/remove-card db card-id list-id)))
 
 (re-frame/reg-event-db
+ ::edit-card-name
+ (fn [db [_ card-id]]
+   (let
+    [card (utils/fetch-card db card-id)
+     new-card (assoc card :name-editing (not (:name-editing card)))]
+     (utils/update-card db card-id new-card))))
+
+(re-frame/reg-event-db
+ ::update-card-buffer
+ (fn [db [_ card-id new-value]]
+   (let
+    [card (utils/fetch-card db card-id)
+     new-card (assoc card :name-buffer new-value)]
+     (utils/update-card db card-id new-card))))
+
+(re-frame/reg-event-db
+ ::change-card-name
+ (fn [db [_ card-id]]
+   (let [card (utils/fetch-card db card-id)]
+     (utils/update-card db card-id
+                        (-> card
+                            (assoc :title (:name-buffer card))
+                            (assoc :name-editing false))))))
+
+(re-frame/reg-event-db
  ::add-task
  (fn [db [_ card-id]]
    (utils/insert-task db card-id (spawner/new-task))))
