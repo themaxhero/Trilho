@@ -5,7 +5,7 @@
    [trilho.subs :as subs]
    [trilho.events :as events]
    [trilho.task :as task]
-   [trilho.utils :as utils]))
+   [trilho.utils :as utils :refer [debug-log]]))
 
 (defn ghost-task []
   ())
@@ -42,11 +42,26 @@
 [:div.card-comments (comment-box card-id)])
 
 (defn render-description [card-id]
-  [:div.card-description
-   [:div {:class "fas fa-bars" :style {:margin "2px 4px"}}]
-   [:div {:style {:width "100%"}}
-    [:b {:style {:margin-left "8px"}} "Descrição"]
-    [:textarea.comment-text {:style {:width "90%" :height "90%" :margin "8px"}}]]])
+  (let [db (re-frame/subscribe [::subs/db])
+        card (utils/fetch-card @db card-id)]
+    [:div.card-description
+     [:div {:class "fas fa-bars" :style {:margin "2px 4px"}}]
+     [:div {:style {:width "100%"}}
+      [:div
+       [:b {:style {:margin-left "8px"}} "Descrição"]
+       (when (:description-editing card)
+         [:i {:class "fas fa-check"
+              :style {:margin-left "8px"}
+              :on-click #(re-frame/dispatch [::events/change-card-description card-id])}])]
+      (if-not (:description-editing card)
+        [:div.noselect
+         {:style {:padding "8px" :cursor "pointer"}
+          :on-click #(re-frame/dispatch [::events/edit-card-description card-id])}
+         (:description card)]
+        [:textarea.comment-text
+         {:value (:description-buffer card)
+          :on-change #(re-frame/dispatch [::events/update-card-description card-id (-> % .-target .-value)])
+          :style {:width "90%" :height "90%" :margin "8px"}}])]]))
 
 (defn progress-bar [card-id tasks]
   (let
@@ -60,7 +75,7 @@
        {:width (str ratio "%") :background-color "#0F0"}}]]))
 
 (defn check-list [tasks card-id]
-  (reduce-kv (fn [acc _ v] (conj acc (task/render v card-id))) '() tasks))
+  (reduce-kv (fn [acc _ v] (conj acc (task/render v card-id))) '()  tasks))
 
 (defn render-checklist [card-id]
   (let
@@ -78,7 +93,10 @@
           [:div.checklist-top-right
            (str "Checklist (" done-tasks "/" (count tasks) ")")
            (progress-bar card-id tasks)]]
-         (check-list tasks card-id)])))
+         [:div
+          {:style
+           {:display "flex" :flex-direction "column-reverse"}}
+          (check-list tasks card-id)]])))
 
 (defn render-editing-left [card-id]
   (let

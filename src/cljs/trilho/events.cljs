@@ -111,6 +111,30 @@
                             (assoc :name-editing false))))))
 
 (re-frame/reg-event-db
+ ::change-card-description
+ (fn [db [_ card-id]]
+   (let [card (utils/fetch-card db card-id)]
+     (utils/update-card db card-id
+                        (-> card
+                            (assoc :description (:description-buffer card))
+                            (assoc :description-editing false))))))
+
+(re-frame/reg-event-db
+ ::edit-card-description
+ (fn [db [_ card-id]]
+   (let
+    [card (utils/fetch-card db card-id)
+     new-card (assoc card :description-editing (not (:description-editing card)))]
+     (utils/update-card db card-id new-card))))
+
+(re-frame/reg-event-db
+ ::update-card-description
+ (fn [db [_ card-id new-value]]
+   (let
+    [card (utils/fetch-card db card-id)]
+     (utils/update-card db card-id (assoc card :description-buffer new-value)))))
+
+(re-frame/reg-event-db
  ::add-task
  (fn [db [_ card-id]]
    (utils/insert-task db card-id (spawner/new-task))))
@@ -145,7 +169,7 @@
  (fn [db [_ task-id]]
    (let
     [task (utils/fetch-task db task-id)
-     new-task (assoc task :checked (not (:checked (debug-log task))))]
+     new-task (assoc task :checked (not (:checked task)))]
     (utils/update-task db task-id new-task))))
 
 (re-frame/reg-event-db

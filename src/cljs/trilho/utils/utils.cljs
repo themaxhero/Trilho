@@ -9,7 +9,7 @@
 (defn fetch-list [db list-id]
   (let
    [lists (:lists db)
-    list (nth lists (debug-log list-id))]
+    list (nth lists list-id)]
     list))
 
 (defn get-card-index [db card-id]
@@ -64,7 +64,7 @@
     new-list (update list :card-ids conj card-id)]
     (-> db
          (assoc :cards new-cards)
-         (update-in [:lists list-id] #(debug-log new-list)))))
+         (update-list list-id new-list))))
 
 (defn insert-task [db card-id task]
   (let
@@ -142,7 +142,7 @@
                              (into [] (conj acc (fetch-task db v))))
                           [] card-tasklist)]
     (reduce-kv (fn [acc _ v]
-                 (if  (:checked (debug-log v)) (+ acc 1) acc))
+                 (if  (:checked v) (+ acc 1) acc))
                0 card-tasks)))
 
 (defn conditional-merge [map condition other]
